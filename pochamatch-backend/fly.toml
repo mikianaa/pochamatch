@@ -1,5 +1,5 @@
 app = "pochamatch-backend"
-primary_region = "nrt"
+primary_region = "sjc"
 
 [build]
 
