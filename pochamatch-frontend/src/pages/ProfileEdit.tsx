@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { profileAPI, Profile } from '../lib/api';
+import UserProfileModal from '../components/UserProfileModal';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -37,6 +38,7 @@ const ProfileEdit: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -92,7 +94,7 @@ const ProfileEdit: React.FC = () => {
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-lg font-semibold flex-1">プロフィール編集</h1>
-        <button className="text-pink-600 text-sm" onClick={() => alert('プレビュー機能は開発中です')}>
+        <button className="text-pink-600 text-sm" onClick={() => setShowPreview(true)}>
           プレビュー
         </button>
       </div>
@@ -528,6 +530,14 @@ const ProfileEdit: React.FC = () => {
           {saving ? '保存中...' : '変更・登録'}
         </Button>
       </div>
+
+      <UserProfileModal
+        open={showPreview}
+        onOpenChange={setShowPreview}
+        mode="preview"
+        draftProfile={profile}
+        showActions={false}
+      />
     </div>
   );
 };

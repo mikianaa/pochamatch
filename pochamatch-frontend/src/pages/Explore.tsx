@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
+import UserProfileModal from '../components/UserProfileModal';
 import { userAPI, likeAPI, User } from '../lib/api';
 import { Heart, Filter, CheckCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -15,6 +16,8 @@ const Explore: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [filters, setFilters] = useState({
     body_type: '',
     prefecture: '',
@@ -44,6 +47,21 @@ const Explore: React.FC = () => {
     } catch (error) {
       console.error('Failed to like user:', error);
     }
+  };
+
+  const handleUserClick = async (userId: number) => {
+    try {
+      const fullUser = await userAPI.getUser(userId);
+      setSelectedUser(fullUser);
+      setShowProfileModal(true);
+    } catch (error) {
+      console.error('Failed to load user:', error);
+    }
+  };
+
+  const handleModalLike = async (userId: number) => {
+    await handleLike(userId);
+    setShowProfileModal(false);
   };
 
   const handleApplyFilters = () => {
@@ -108,7 +126,7 @@ const Explore: React.FC = () => {
                 <div
                   key={user.id}
                   className="relative bg-white rounded-lg shadow-md overflow-hidden cursor-pointer"
-                  onClick={() => navigate(`/profile/${user.id}`)}
+                  onClick={() => handleUserClick(user.id)}
                 >
                   <div className="relative aspect-square bg-gray-200">
                     {user.profile?.photo_url ? (
@@ -299,6 +317,15 @@ const Explore: React.FC = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <UserProfileModal
+        open={showProfileModal}
+        onOpenChange={setShowProfileModal}
+        mode="view"
+        user={selectedUser || undefined}
+        onLike={handleModalLike}
+        showActions={true}
+      />
     </Layout>
   );
 };
